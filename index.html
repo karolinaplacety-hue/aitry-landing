@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI.TRY - Virtual Try-On for Fashion</title>
+  <meta name="description" content="The virtual try-on that makes every shopper the model. AI-powered fashion technology for brands.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600&family=Playfair+Display:ital,wght@1,600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --cream: #f8f6f2;
+      --black: #1a1a1a;
+      --coral: #d4836b;
+      --gray: #999;
+      --gray-light: #c5c5c5;
+    }
+
+    html { height: 100%; overflow: hidden; }
+
+    body {
+      font-family: 'Outfit', -apple-system, sans-serif;
+      background: var(--cream);
+      color: var(--black);
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    /* === NAV === */
+    nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 22px 48px;
+      flex-shrink: 0;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      text-decoration: none;
+      color: var(--black);
+      font-family: 'Outfit', sans-serif;
+      font-weight: 300;
+      font-size: 24px;
+      letter-spacing: 2px;
+    }
+
+    .logo-pill {
+      display: inline-flex;
+      align-items: center;
+      border: 1.2px solid var(--black);
+      border-radius: 24px;
+      padding: 3px 14px 4px;
+      margin-left: 1px;
+      font-size: 16px;
+      font-weight: 400;
+      letter-spacing: 3px;
+    }
+
+    .nav-status {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 2.5px;
+      text-transform: uppercase;
+    }
+
+    .nav-status::before {
+      content: '';
+      width: 7px;
+      height: 7px;
+      background: var(--coral);
+      border-radius: 50%;
+    }
+
+    /* === HERO === */
+    .hero {
+      flex: 1;
+      display: grid;
+      grid-template-columns: 45fr 55fr;
+      padding: 0 48px;
+      gap: 0;
+      min-height: 0;
+      overflow: hidden;
+    }
+
+    /* LEFT */
+    .hero-content {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding-right: 32px;
+    }
+
+    .hero-tag {
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--coral);
+      margin-bottom: 32px;
+    }
+
+    .hero-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: clamp(32px, 3.4vw, 50px);
+      font-weight: 400;
+      line-height: 1.15;
+      letter-spacing: -0.5px;
+      margin-bottom: 32px;
+    }
+
+    .hero-title em {
+      font-family: 'Playfair Display', serif;
+      font-style: italic;
+      font-weight: 600;
+      color: var(--coral);
+    }
+
+    .waitlist-label {
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+
+    .waitlist-form {
+      display: flex;
+      margin-bottom: 12px;
+    }
+
+    .waitlist-form input {
+      flex: 1;
+      max-width: 220px;
+      padding: 12px 18px;
+      border: 1.2px solid var(--gray-light);
+      border-right: none;
+      border-radius: 6px 0 0 6px;
+      background: rgba(255,255,255,0.5);
+      font-family: inherit;
+      font-size: 13px;
+      color: var(--black);
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .waitlist-form input::placeholder { color: var(--gray); }
+    .waitlist-form input:focus { border-color: var(--coral); }
+
+    .waitlist-form button {
+      padding: 12px 24px;
+      background: var(--black);
+      color: #fff;
+      border: none;
+      border-radius: 0 6px 6px 0;
+      font-family: inherit;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 0.2s;
+      white-space: nowrap;
+    }
+
+    .waitlist-form button:hover { background: #333; }
+
+    .waitlist-note {
+      font-size: 12px;
+      color: var(--gray);
+    }
+
+    .waitlist-success {
+      display: none;
+      padding: 14px 18px;
+      background: rgba(212, 131, 107, 0.1);
+      border: 1px solid var(--coral);
+      border-radius: 6px;
+      font-size: 13px;
+      max-width: 360px;
+    }
+
+    /* === RIGHT - SHOWCASE === */
+    .showcase {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 0;
+      overflow: hidden;
+      padding: 12px 0;
+      position: relative;
+    }
+
+    .showcase-container {
+      position: relative;
+      height: 100%;
+      max-height: 100%;
+      aspect-ratio: 848 / 1264;
+      border-radius: 16px;
+      overflow: hidden;
+      cursor: pointer;
+      box-shadow: none;
+      background: var(--cream);
+    }
+
+    .showcase-container img,
+    .showcase-container video {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.6s ease, visibility 0s linear 0.6s;
+    }
+
+    .showcase-container .layer-before { opacity: 1; visibility: visible; transition: opacity 0.6s ease, visibility 0s; z-index: 3; }
+    .showcase-container .layer-after  { z-index: 2; }
+    .showcase-container .layer-video  { z-index: 1; }
+
+    /* States - only ONE layer visible at a time */
+    .showcase-container.show-after .layer-before { opacity: 0; visibility: hidden; transition: opacity 0.6s ease, visibility 0s linear 0.6s; }
+    .showcase-container.show-after .layer-after  { opacity: 1; visibility: visible; transition: opacity 0.6s ease, visibility 0s; z-index: 4; }
+
+    .showcase-container.show-video .layer-before { opacity: 0; visibility: hidden; transition: opacity 0.6s ease, visibility 0s linear 0.6s; }
+    .showcase-container.show-video .layer-after  { opacity: 0; visibility: hidden; transition: opacity 0.6s ease, visibility 0s linear 0.6s; }
+    .showcase-container.show-video .layer-video  { opacity: 1; visibility: visible; transition: opacity 0.6s ease, visibility 0s; z-index: 5; }
+
+    /* Step indicator */
+    .showcase-steps {
+      position: absolute;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 8px;
+      z-index: 10;
+      background: rgba(0,0,0,0.4);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      padding: 8px 16px;
+      border-radius: 24px;
+    }
+
+    .step-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.4);
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .step-dot.active {
+      background: #fff;
+      width: 24px;
+      border-radius: 4px;
+    }
+
+    /* Step label */
+    .showcase-label {
+      position: absolute;
+      top: 16px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 10;
+      background: rgba(0,0,0,0.45);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      color: #fff;
+      padding: 6px 18px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      transition: opacity 0.3s;
+      pointer-events: none;
+    }
+
+    /* Play icon overlay for video state */
+    .play-hint {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 10;
+      width: 64px;
+      height: 64px;
+      background: rgba(0,0,0,0.4);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border-radius: 50%;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      pointer-events: none;
+      transition: opacity 0.3s;
+    }
+
+    .play-hint svg {
+      width: 24px;
+      height: 24px;
+      fill: #fff;
+      margin-left: 3px;
+    }
+
+    .showcase-container.show-before .play-hint { display: none; }
+
+    /* === FOOTER === */
+    footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px 48px;
+      flex-shrink: 0;
+      border-top: 1px solid rgba(0,0,0,0.06);
+    }
+
+    footer span, footer a {
+      font-size: 11px;
+      color: var(--gray);
+      text-decoration: none;
+    }
+
+    footer a:hover { color: var(--black); }
+
+    /* === MOBILE === */
+    @media (max-width: 900px) {
+      html { overflow: auto; }
+      body { height: auto; min-height: 100vh; overflow: auto; }
+      nav { padding: 18px 24px; }
+
+      .hero {
+        grid-template-columns: 1fr;
+        padding: 0 24px;
+        gap: 24px;
+        overflow: visible;
+      }
+
+      .hero-content { padding-top: 8px; }
+      .hero-title { font-size: 30px; margin-bottom: 28px; }
+
+      .showcase { max-height: 60vh; padding: 0 0 16px; }
+      .showcase-container { height: auto; max-height: 60vh; }
+
+      footer { padding: 16px 24px; }
+    }
+
+    @media (max-width: 500px) {
+      .waitlist-form { flex-direction: column; gap: 8px; }
+      .waitlist-form input {
+        max-width: 100%;
+        border-right: 1.2px solid var(--gray-light);
+        border-radius: 6px;
+      }
+      .waitlist-form input:focus { border-color: var(--coral); }
+      .waitlist-form button { border-radius: 6px; }
+    }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <a href="/" class="logo">AI.<span class="logo-pill">TRY</span></a>
+    <div class="nav-status">COMING SOON</div>
+  </nav>
+
+  <main class="hero">
+    <div class="hero-content">
+      <p class="hero-tag">Every body is the right body</p>
+      <h1 class="hero-title">
+        The virtual<br>
+        try-on<br>
+        that makes<br>
+        <em>every</em><br>
+        shopper the<br>
+        model.
+      </h1>
+
+      <p class="waitlist-label">Be first to try</p>
+      <form class="waitlist-form" id="waitlist-form">
+        <input type="email" placeholder="your@email.com" required id="waitlist-email">
+        <button type="submit">Join waitlist</button>
+      </form>
+      <div class="waitlist-success" id="waitlist-success">
+        Thanks! You're on the list. We'll be in touch soon.
+      </div>
+    </div>
+
+    <div class="showcase">
+      <div class="showcase-container" id="showcase">
+        <img src="img/poza.jpg" alt="Original photo" class="layer-before">
+        <img src="img/piora-clean.png" alt="Virtual try-on result" class="layer-after">
+        <video src="img/ROZOWE.mp4?v=2" class="layer-video" muted loop playsinline preload="auto"></video>
+
+        <div class="showcase-label" id="showcase-label">Your photo</div>
+
+        <div class="play-hint" id="play-hint">
+          <svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg>
+        </div>
+
+        <div class="showcase-steps">
+          <div class="step-dot active" data-step="0"></div>
+          <div class="step-dot" data-step="1"></div>
+          <div class="step-dot" data-step="2"></div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    <span>&copy; 2026 AI.TRY &mdash; San Francisco</span>
+    <a href="mailto:contact@aitry.ai">contact@aitry.ai</a>
+  </footer>
+
+  <script>
+    const showcase = document.getElementById('showcase');
+    const label = document.getElementById('showcase-label');
+    const video = showcase.querySelector('video');
+    const dots = document.querySelectorAll('.step-dot');
+    const labels = ['Your photo', 'AI try-on', 'Comes alive'];
+    let currentStep = 0;
+    let autoTimer = null;
+
+    function goToStep(step) {
+      currentStep = step;
+      showcase.className = 'showcase-container';
+
+      if (step === 0) {
+        showcase.classList.add('show-before');
+        video.pause();
+      } else if (step === 1) {
+        showcase.classList.add('show-after');
+        video.pause();
+      } else {
+        showcase.classList.add('show-video');
+        video.currentTime = 0;
+        video.play();
+      }
+
+      label.textContent = labels[step];
+      dots.forEach((d, i) => d.classList.toggle('active', i === step));
+    }
+
+    function nextStep() {
+      goToStep((currentStep + 1) % 3);
+    }
+
+    // Click to advance
+    showcase.addEventListener('click', (e) => {
+      if (e.target.closest('.step-dot')) return;
+      clearInterval(autoTimer);
+      nextStep();
+      autoTimer = setInterval(nextStep, currentStep === 2 ? 6000 : 2500);
+    });
+
+    // Dot clicks
+    dots.forEach(dot => {
+      dot.addEventListener('click', (e) => {
+        e.stopPropagation();
+        clearInterval(autoTimer);
+        goToStep(parseInt(dot.dataset.step));
+        autoTimer = setInterval(nextStep, currentStep === 2 ? 6000 : 2500);
+      });
+    });
+
+    // Auto-cycle: start after 2s
+    setTimeout(() => {
+      autoTimer = setInterval(nextStep, 2500);
+    }, 2000);
+
+    // Waitlist form
+    document.getElementById('waitlist-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const email = document.getElementById('waitlist-email').value;
+      try {
+        await fetch('/api/v1/waitlist', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email })
+        });
+      } catch (err) {}
+      document.getElementById('waitlist-form').style.display = 'none';
+      document.getElementById('waitlist-success').style.display = 'block';
+    });
+  </script>
+</body>
+</html>
